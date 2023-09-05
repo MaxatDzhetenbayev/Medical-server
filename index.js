@@ -88,16 +88,11 @@ app.post("/questionnaire", async (req, res) => {
 app.get("/data", async (req, res) => {
   const client = await pool.connect();
 
-  const data = [
-    [0, 1, 2, 3, 4, 5],
-    [0, 1, 2, 3, 4, 5],
-    [0, 1, 2, 3, 4, 5],
-    [0, 1, 2, 3, 4, 5],
-  ];
-
   try {
     const query = "SELECT * FROM person";
     const result = await client.query(query);
+
+    if (!result.rows) return res.status(404).send("Нет данных");
 
     const columnHeaders = ["Возраст", "Пол", "Регион", "Город", "Итог теста"];
     const excelData = result.rows.map((person) => [
@@ -116,14 +111,12 @@ app.get("/data", async (req, res) => {
 
     const excelFilePath = "output.xlsx";
     workbook.xlsx.writeFile(excelFilePath).then(() => {
-      res.sendFile(excelFilePath, { root: __dirname }, () => {
+      res.status(200).send("ОК!").sendFile(excelFilePath, { root: __dirname }, () => {
         fs.unlinkSync(excelFilePath);
       });
     });
   } catch (err) {
     console.log(err);
-  } finally {
-    client.release();
   }
 });
 
