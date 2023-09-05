@@ -111,25 +111,10 @@ app.get("/data", async (req, res) => {
 
     const excelFilePath = path.join(__dirname, "uploads", "output.xlsx");
 
-    fs.unlinkSync(excelFilePath);
-
     workbook.xlsx.writeFile(excelFilePath);
 
     return res.status(200).send("OK!");
 
-    //  .then(() => {
-    //    // Отправьте файл клиенту в ответе
-    //    res.download(excelFilePath, "output.xlsx", (err) => {
-    //      // Удалите файл после отправки
-    //      fs.unlinkSync(excelFilePath);
-
-    //      if (err) {
-    //        console.error("Ошибка при отправке файла: ", err);
-    //      } else {
-    //        console.log("Файл успешно отправлен клиенту.");
-    //      }
-    //    });
-    //  });
   } catch (err) {
     console.log(err);
   }
