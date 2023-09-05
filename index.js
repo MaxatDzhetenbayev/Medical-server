@@ -109,11 +109,21 @@ app.get("/data", async (req, res) => {
 
     worksheet.addRows(excelData);
 
-    const excelFilePath = path.join("tmp", "output.xlsx");
+    const excelFilePath = path.join(__dirname, "output.xlsx");
 
-    workbook.xlsx.writeFile(excelFilePath);
+    workbook.xlsx.writeFile(excelFilePath).then(() => {
+      res.download(excelFilePath, "output.xlsx", (err) => {
+        fs.unlinkSync(excelFilePath);
 
-    return res.status(200).send("OK!");
+        if (err) {
+          console.error("Ошибка при отправке файла: ", err);
+          return res.status(404).send(err);
+        } else {
+          console.log("Файл успешно отправлен клиенту.");
+          return res.status(200).send("Файл успешно отправлен клиенту.");
+        }
+      });
+    });
   } catch (err) {
     console.log(err);
   }
