@@ -109,12 +109,11 @@ app.get("/data", async (req, res) => {
 
     worksheet.addRows(excelData);
 
-    const excelFilePath = path.join(__dirname, "uploads", "output.xlsx");
+    const excelFilePath = path.join("tmp", "output.xlsx");
 
     workbook.xlsx.writeFile(excelFilePath);
 
     return res.status(200).send("OK!");
-
   } catch (err) {
     console.log(err);
   }
