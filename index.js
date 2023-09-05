@@ -32,6 +32,7 @@ const pool = new Pool({
 
 app.use(cors());
 app.use(express.json());
+app.set("trust proxy", true);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.post("/upload", upload.single("image"), (req, res) => {
@@ -144,6 +145,21 @@ app.post("/auth", async (req, res) => {
     return res.status(200).json({ message: "Авторизация прошла успешно" });
   } else {
     return res.status(401).json({ message: "Неправильный логин или пароль" });
+  }
+});
+
+app.get("/", async (req, res) => {
+  try {
+    await pool.query("SELECT increment_visit_count()");
+
+    const result = await pool.query(
+      "SELECT * FROM visit_counts WHERE day = CURRENT_DATE"
+    );
+
+    return res.json({ ...result.rows[0] });
+  } catch (error) {
+    console.error("Ошибка:", error);
+    res.status(500).json({ error: "Произошла ошибка" });
   }
 });
 
