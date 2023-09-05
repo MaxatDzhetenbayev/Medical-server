@@ -129,6 +129,24 @@ app.get("/data", async (req, res) => {
   }
 });
 
+app.post("/auth", async (req, res) => {
+  const { username, password } = req.body;
+
+  const adminCredentials = {
+    username: "admin",
+    password: "admin",
+  };
+
+  if (
+    username === adminCredentials.username &&
+    password === adminCredentials.password
+  ) {
+    return res.status(200).json({ message: "Авторизация прошла успешно" });
+  } else {
+    return res.status(401).json({ message: "Неправильный логин или пароль" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
