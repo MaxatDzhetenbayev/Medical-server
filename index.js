@@ -109,21 +109,27 @@ app.get("/data", async (req, res) => {
 
     worksheet.addRows(excelData);
 
-    const excelFilePath = path.join(__dirname, "tmp", "output.xlsx");
+    const excelFilePath = path.join(__dirname, "uploads", "output.xlsx");
 
-    workbook.xlsx.writeFile(excelFilePath).then(() => {
-      // Отправьте файл клиенту в ответе
-      res.download(excelFilePath, "output.xlsx", (err) => {
-        // Удалите файл после отправки
-        fs.unlinkSync(excelFilePath);
+    fs.unlinkSync(excelFilePath);
 
-        if (err) {
-          console.error("Ошибка при отправке файла: ", err);
-        } else {
-          console.log("Файл успешно отправлен клиенту.");
-        }
-      });
-    });
+    workbook.xlsx.writeFile(excelFilePath);
+
+    return res.status(200).send("OK!");
+
+    //  .then(() => {
+    //    // Отправьте файл клиенту в ответе
+    //    res.download(excelFilePath, "output.xlsx", (err) => {
+    //      // Удалите файл после отправки
+    //      fs.unlinkSync(excelFilePath);
+
+    //      if (err) {
+    //        console.error("Ошибка при отправке файла: ", err);
+    //      } else {
+    //        console.log("Файл успешно отправлен клиенту.");
+    //      }
+    //    });
+    //  });
   } catch (err) {
     console.log(err);
   }
