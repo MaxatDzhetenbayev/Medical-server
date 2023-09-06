@@ -70,13 +70,13 @@ app.post("/add-translation", async (req, res) => {
 });
 
 app.post("/questionnaire", async (req, res) => {
-  const { sex, region, city, score } = req.body;
+  const { sex, location, score } = req.body;
 
   const query =
-    "INSERT INTO person(sex,region,city,test_score) values($1,$2,$3,$4) RETURNING id";
+    "INSERT INTO person(sex,location,test_score) values($1,$2,$3) RETURNING id";
 
   try {
-    const answer = await pool.query(query, [sex, region, city, score]);
+    const answer = await pool.query(query, [sex, location, score]);
 
     res.status(201).send(answer.rows);
   } catch (err) {
@@ -92,11 +92,10 @@ app.get("/data", async (req, res) => {
 
     if (!result.rows) return res.status(404).send("Нет данных");
 
-    const columnHeaders = ["Пол", "Регион", "Город", "Итог теста"];
+    const columnHeaders = ["Пол", "Населенный пункт", "Итог теста"];
     const excelData = result.rows.map((person) => [
       person.sex,
-      person.region,
-      person.city,
+      person.location,
       person.test_score,
     ]);
     excelData.unshift(columnHeaders);
