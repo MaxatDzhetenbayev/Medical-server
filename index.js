@@ -70,14 +70,13 @@ app.post("/add-translation", async (req, res) => {
 });
 
 app.post("/questionnaire", async (req, res) => {
-  const { age, sex, region, city, score } = req.body;
-  console.log(req.body);
+  const { sex, region, city, score } = req.body;
 
   const query =
-    "INSERT INTO person(age,sex,region,city,test_score) values($1,$2,$3,$4,$5) RETURNING id";
+    "INSERT INTO person(sex,region,city,test_score) values($1,$2,$3,$4) RETURNING id";
 
   try {
-    const answer = await pool.query(query, [age, sex, region, city, score]);
+    const answer = await pool.query(query, [sex, region, city, score]);
 
     res.status(201).send(answer.rows);
   } catch (err) {
