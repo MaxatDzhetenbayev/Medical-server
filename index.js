@@ -87,17 +87,14 @@ app.post("/questionnaire", async (req, res) => {
 });
 
 app.get("/data", async (req, res) => {
-  const client = await pool.connect();
-
   try {
     const query = "SELECT * FROM person";
-    const result = await client.query(query);
+    const result = await pool.query(query);
 
     if (!result.rows) return res.status(404).send("Нет данных");
 
-    const columnHeaders = ["Возраст", "Пол", "Регион", "Город", "Итог теста"];
+    const columnHeaders = ["Пол", "Регион", "Город", "Итог теста"];
     const excelData = result.rows.map((person) => [
-      person.age,
       person.sex,
       person.region,
       person.city,
@@ -113,20 +110,13 @@ app.get("/data", async (req, res) => {
     const excelFilePath = path.join(__dirname, "output.xlsx");
 
     workbook.xlsx.writeFile(excelFilePath).then(() => {
-      res.download(excelFilePath, "output.xlsx", (err) => {
+      return res.download(excelFilePath, "output.xlsx", (err) => {
         fs.unlinkSync(excelFilePath);
-
-        if (err) {
-          console.error("Ошибка при отправке файла: ", err);
-          return res.status(404).send(err);
-        } else {
-          console.log("Файл успешно отправлен клиенту.");
-          return res.status(200).send("Файл успешно отправлен клиенту.");
-        }
       });
     });
   } catch (err) {
     console.log(err);
+    return res.status(404).send(err);
   }
 });
 
@@ -160,6 +150,36 @@ app.get("/", async (req, res) => {
   } catch (error) {
     console.error("Ошибка:", error);
     res.status(500).json({ error: "Произошла ошибка" });
+  }
+});
+
+app.get("/visit_counts", async (req, res) => {
+  const { period } = req.query;
+  let query = "";
+
+  switch (period) {
+    case "week":
+      query =
+        "SELECT day, count FROM visit_counts WHERE day >= CURRENT_DATE - INTERVAL '1 week'";
+      break;
+    case "month":
+      query =
+        "SELECT DATE_TRUNC('month', day) AS month, SUM(count) AS count FROM visit_counts GROUP BY month ORDER BY month";
+      break;
+    default:
+      query =
+        "SELECT day as date, count FROM visit_counts WHERE day >= CURRENT_DATE - INTERVAL '1 week'";
+      break;
+  }
+
+  try {
+    const result = await pool.query(query);
+
+    if (!result.rows) return res.status(400).json("Нет данных");
+
+    return res.status(200).json(result.rows);
+  } catch (err) {
+    console.log(err);
   }
 });
 
