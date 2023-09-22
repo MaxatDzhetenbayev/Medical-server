@@ -158,7 +158,7 @@ app.get("/visit_counts", async (req, res) => {
   switch (period) {
     case "week":
       query =
-        "SELECT day, count FROM visit_counts WHERE day >= CURRENT_DATE - INTERVAL '1 week'";
+        "SELECT day, count FROM visit_counts WHERE day >= CURRENT_DATE - INTERVAL '1 week' ORDER BY day ASC";
       break;
     case "month":
       query =
