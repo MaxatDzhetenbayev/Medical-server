@@ -21,10 +21,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const pool = new Pool({
-  user: "maksat",
-  host: "dpg-cjfe12gcfp5c73abst0g-a.frankfurt-postgres.render.com",
+  user: "render_db_dw6a_user",
+  host: "dpg-claf5hto7jlc73chl9d0-a.frankfurt-postgres.render.com",
   database: "medical",
-  password: "sPYAexxEwESUiE5lWMzzGAa4cscRWwva",
+  password: "WokKIB6Py1ali6qFb2ha6kKcbno9XIV7",
   port: 5432,
   idleTimeoutMillis: 7200,
   ssl: true,
